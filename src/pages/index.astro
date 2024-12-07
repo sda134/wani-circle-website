@@ -8,11 +8,25 @@ const events = await getCollection('events');
 
 <Layout title="わにサークル">
 	<main>
-    <h1>わにサークルのイベント情報</h1>
-		<ul>
-			{events.map((event) => (
-				<Card event={event} />
-			))}	
-    	</ul>
+		<h1>わにサークルのイベント情報</h1>
+		<div class="container mx-auto">
+			<ul class="grid grid-cols-1 md:grid-cols-3 gap-6">
+				{events.map((event) => (
+					<div class="p-4">
+						<a
+						  href={`events/${event.slug}`}
+						  class="block"
+						>
+							{event.data.title}
+						</a>
+						<img
+						    src={event.data.image}
+							class="w-full h-48 object-cover"
+						/>
+					</div>
+					// <Card event={event} />
+				))}	
+			</ul>
+		</div>
 	</main>
 </Layout>
