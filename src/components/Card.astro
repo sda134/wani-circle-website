@@ -1,0 +1,12 @@
+---
+const {event} = Astro.props;
+---
+
+
+<li class="link-card">
+	<a href=`events/${event.slug}`>
+		<h2>
+			{event.data.title}
+        </h2>
+    </a>
+</li>
