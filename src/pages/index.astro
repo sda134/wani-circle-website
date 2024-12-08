@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const events = await getCollection('events');
+const sortedEvents = events.sort((a,b)=> new Date(a.data.date) - new Date(b.data.date));
 ---
 
 <Layout title="わにサークル">
@@ -11,18 +12,20 @@ const events = await getCollection('events');
 		<h1>わにサークルのイベント情報</h1>
 		<div class="container mx-auto">
 			<ul class="grid grid-cols-1 md:grid-cols-3 gap-6">
-				{events.map((event) => (
+				{sortedEvents.map((event) => (
 					<div class="p-4">
+						<p>{event.data.title}</p>
+						{event.data.date}
+
 						<a
 						  href={`events/${event.slug}`}
 						  class="block"
 						>
-							{event.data.title}
-						</a>
-						<img
+							<img
 						    src={event.data.image}
 							class="w-full h-48 object-cover"
-						/>
+							/>
+						</a>
 					</div>
 					// <Card event={event} />
 				))}	
