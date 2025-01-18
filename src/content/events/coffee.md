@@ -16,4 +16,4 @@ image: "/images/events/coffee_roast.jpg"
 
 
 # 資料
-https://docs.google.com/presentation/d/1WiFTHgDf26xNKFwMg8CmKrhyygEfsRQ0A21Ha6TURlI/edit?usp=drive_link
+[googleスライドの資料](https://docs.google.com/presentation/d/1WiFTHgDf26xNKFwMg8CmKrhyygEfsRQ0A21Ha6TURlI/edit?usp=drive_link)
