@@ -7,7 +7,6 @@ description: "みんなで豆まきしましょう"
 image: "/images/events/setsubun.jpg"
 ---
 
-節分豆まき
 
 # 内容
 みんなで豆まきしましょう
