@@ -7,4 +7,13 @@ description: "コーヒー豆の焙煎、特に欠点豆と焙煎深さについ
 image: "/images/events/coffee_roast.jpg"
 ---
 
-# コーヒー豆焙煎
+コーヒー豆焙煎
+
+# 内容
+- 焙煎とは
+- 欠点豆について
+- 自家焙煎のやりかた
+
+
+# 資料
+https://docs.google.com/presentation/d/1WiFTHgDf26xNKFwMg8CmKrhyygEfsRQ0A21Ha6TURlI/edit?usp=drive_link
