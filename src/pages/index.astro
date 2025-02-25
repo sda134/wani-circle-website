@@ -6,7 +6,7 @@ import { getCollection } from 'astro:content';
 const events = await getCollection('events');
 
 const upcomingEvents = events
-  .filter(event => event.data.isUpcoming)
+  .filter(event => event.data.isUpcoming == true)
   .sort((a, b) => new Date(a.data.date) - new Date(b.data.date));
 ---
 
