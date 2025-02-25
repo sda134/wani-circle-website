@@ -5,6 +5,7 @@ time: "14:00-16:00"
 location: "伊佐治家"
 description: "星を感じましょう"
 image: "/images/events/star_gaze.jpg"
+isUpcoming: false
 ---
 
 # 内容

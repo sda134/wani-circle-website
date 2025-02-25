@@ -4,7 +4,10 @@ import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
 const events = await getCollection('events');
-const sortedEvents = events.sort((a,b)=> new Date(a.data.date) - new Date(b.data.date));
+
+const upcomingEvents = events
+  .filter(event => event.data.isUpcoming)
+  .sort((a, b) => new Date(a.data.date) - new Date(b.data.date));
 ---
 
 <Layout title="わにサークル">

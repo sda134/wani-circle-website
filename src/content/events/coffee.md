@@ -5,6 +5,7 @@ time: "18:00-21:00"
 location: "伊佐治家"
 description: "コーヒー豆の焙煎、特に欠点豆と焙煎深さについて。"
 image: "/images/events/coffee_roast.jpg"
+isUpcoming: true
 ---
 
 # 内容
