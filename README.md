@@ -1,49 +1,97 @@
-# Astro Starter Kit: Basics
+# わにサークル ウェブサイト
 
-```sh
-npm install
-npm create astro@latest -- --template basics
-```
+わにサークルのイベント情報を表示するAstroベースの静的ウェブサイトです。
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## 🚀 プロジェクト概要
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+このサイトは「わにサークル」の今後のイベントを表示するシンプルな静的ウェブサイトです。Astroフレームワークを使用し、Markdownファイルでイベント情報を管理しています。
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## 📁 プロジェクト構造
 
 ```text
 /
 ├── public/
-│   └── favicon.svg
+│   ├── favicon.svg
+│   └── images/
+│       └── events/          # イベント画像
 ├── src/
+│   ├── components/
+│   │   └── Nav.astro        # ナビゲーションコンポーネント
+│   ├── content/
+│   │   └── events/          # イベントのMarkdownファイル
 │   ├── layouts/
-│   │   └── Layout.astro
+│   │   └── Layout.astro     # ベースレイアウト
 │   └── pages/
-│       └── index.astro
+│       ├── index.astro      # ホームページ
+│       └── events/
+│           └── [...event].astro  # イベント詳細ページ
+├── astro.config.mjs         # Astro設定
+├── tailwind.config.mjs      # Tailwind CSS設定
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## 🧞 コマンド
 
-## 🧞 Commands
+プロジェクトルートで以下のコマンドを実行してください：
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
+| コマンド                   | アクション                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `npm install`             | 依存関係をインストール                            |
+| `npm run dev`             | 開発サーバーを `localhost:4321` で起動      |
+| `npm run build`           | 本番サイトを `./dist/` にビルド          |
+| `npm run preview`         | ビルドしたサイトをローカルでプレビュー     |
+| `npm run astro ...`       | Astro CLIコマンドを実行 |
 
-## 👀 Want to learn more?
+## 🎨 技術スタック
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **Astro v4.16.16**: 静的サイトジェネレーター
+- **Tailwind CSS**: スタイリングフレームワーク
+- **TypeScript**: 型安全な開発
+- **Content Collections**: Markdownベースのコンテンツ管理
+
+## 📝 イベント管理
+
+イベントは `src/content/events/` ディレクトリ内のMarkdownファイルで管理されています。
+
+### イベントファイル形式
+
+```markdown
+---
+title: "イベント名"
+date: "2024-01-01"
+time: "14:00-16:00"
+location: "場所"
+description: "イベントの概要"
+image: "/images/events/event-image.jpg"
+isUpcoming: true
+---
+
+イベントの詳細な説明をここに記載...
+```
+
+### 新しいイベントの追加
+
+1. `src/content/events/` に新しい `.md` ファイルを作成
+2. 上記の形式でフロントマターと内容を記載
+3. 必要に応じて `public/images/events/` に画像を配置
+4. Gitコミット・プッシュで自動デプロイ
+
+## 🌐 デプロイ
+
+このサイトはCloudflare Pagesにデプロイされています。`main`ブランチへのプッシュで自動デプロイされます。
+
+**デプロイ設定：**
+- ビルドコマンド: `npm run build`
+- 出力ディレクトリ: `dist`
+- Node.js バージョン: 18以上
+
+## 🎯 主要機能
+
+- **イベント一覧表示**: 今後のイベント（`isUpcoming: true`）のみを表示
+- **イベント詳細ページ**: 各イベントの詳細情報とMarkdownコンテンツ
+- **レスポンシブデザイン**: モバイル・タブレット・デスクトップ対応
+- **高速読み込み**: 静的サイト生成による最適化
+
+## 📄 ライセンス
+
+このプロジェクトは個人利用目的で作成されています。

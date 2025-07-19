@@ -55,7 +55,7 @@ const { Content } = await event.render();
 
       <!-- イベント詳細コンテンツ -->
       <div class="bg-white rounded-lg shadow-md p-8">
-        <div class="prose prose-lg max-w-none">
+        <div class="prose prose-lg max-w-none event-content">
           <Content />
         </div>
       </div>
@@ -72,3 +72,40 @@ const { Content } = await event.render();
     </div>
   </main>
 </Layout>
+
+<style>
+  /* イベント詳細コンテンツ内のリンクスタイル */
+  .event-content a {
+    color: #5c9f8f; /* primary-dark color */
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .event-content a:hover {
+    color: #98d4b9; /* primary color */
+    text-decoration: none;
+  }
+
+  .event-content a:visited {
+    color: #4a7c59; /* slightly darker for visited links */
+  }
+
+  /* 外部リンクに小さなアイコンを追加 */
+  .event-content a[href^="http"]:after,
+  .event-content a[href^="https"]:after {
+    content: " 🔗";
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  /* リンクにホバー効果を追加 */
+  .event-content a {
+    border-bottom: 2px solid transparent;
+  }
+
+  .event-content a:hover {
+    border-bottom-color: #98d4b9;
+    text-decoration: none;
+  }
+</style>
