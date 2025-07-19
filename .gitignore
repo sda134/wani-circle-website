@@ -22,3 +22,65 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Claude Code related files
+CLAUDE.md
+.claude/
+claude-*.json
+.claude-session
+.claude-history
+
+# VS Code settings
+.vscode/
+
+# Editor backups and temporary files
+*~
+*.tmp
+*.bak
+.swp
+.swo
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Cache directories
+.cache/
+.temp/
+.tmp/
+
+# Coverage reports
+coverage/
+*.lcov
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettier-cache
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env.*
+!.env.example
+
+# Vercel deployment files
+.vercel
+
+# Astro specific
+.astro/

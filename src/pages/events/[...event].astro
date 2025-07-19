@@ -15,9 +15,60 @@ const { event } = Astro.props;
 const { Content } = await event.render();
 ---
 
-<Layout title={event.slug}>
+<Layout title={event.data.title}>
   <Nav/>
-  <br/>
-  <h1>{event.data.title}</h1>
-  <Content />
+  <main class="container mx-auto bg-secondary-light min-h-screen">
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      <!-- イベントヘッダー -->
+      <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+        <h1 class="text-3xl font-bold text-primary-dark mb-4">{event.data.title}</h1>
+        
+        <!-- イベント詳細情報 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="space-y-3">
+            <div class="flex items-center text-gray-700">
+              <span class="font-semibold text-primary-dark mr-2">📅 日時:</span>
+              <span>{event.data.date} {event.data.time}</span>
+            </div>
+            <div class="flex items-center text-gray-700">
+              <span class="font-semibold text-primary-dark mr-2">📍 場所:</span>
+              <span>{event.data.location}</span>
+            </div>
+            <div class="text-gray-700">
+              <span class="font-semibold text-primary-dark mr-2">📝 概要:</span>
+              <span>{event.data.description}</span>
+            </div>
+          </div>
+          
+          <!-- イベント画像 -->
+          {event.data.image && (
+            <div class="flex justify-center">
+              <img 
+                src={event.data.image} 
+                alt={event.data.title}
+                class="w-full max-w-md h-64 object-cover rounded-lg shadow-sm"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <!-- イベント詳細コンテンツ -->
+      <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="prose prose-lg max-w-none">
+          <Content />
+        </div>
+      </div>
+
+      <!-- 戻るボタン -->
+      <div class="mt-8 text-center">
+        <a 
+          href="/" 
+          class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-colors duration-200 shadow-md"
+        >
+          ← イベント一覧に戻る
+        </a>
+      </div>
+    </div>
+  </main>
 </Layout>

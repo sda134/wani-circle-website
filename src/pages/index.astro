@@ -12,29 +12,29 @@ const upcomingEvents = events
 
 <Layout title="わにサークル">
   <Nav/>
-	<main class="container mx-auto bg-secondary-light">
-		
-		<h1 class="text-xl py-3">わにサークルのイベント情報</h1>
-		<div class="container mx-auto">
-			<ul class="grid grid-cols-1 md:grid-cols-3 gap-6">
+	<main class="min-h-screen bg-secondary-light">
+		<div class="container mx-auto px-4 py-8">
+			<h1 class="text-3xl font-bold text-center mb-8 text-gray-800">わにサークルのイベント情報</h1>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
 				{upcomingEvents.map((event) => (
-          <article class="bg-white rounded-lg shadow-md p-6">
-            <p>{event.data.title}</p>
-          {event.data.date}
-
-          <a
-            href={`events/${event.slug}`}
-            class="block"
-          >
-            <img
-              src={event.data.image}
-            class="w-full h-48 object-cover"
-            />
-          </a>
+          <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <a
+              href={`events/${event.slug}`}
+              class="block"
+            >
+              <img
+                src={event.data.image}
+                alt={event.data.title}
+                class="w-full h-48 object-cover"
+              />
+            </a>
+            <div class="p-4">
+              <h2 class="font-semibold text-lg mb-2 text-gray-800">{event.data.title}</h2>
+              <p class="text-gray-600 text-sm">{event.data.date}</p>
+            </div>
           </article>
-					// <Card event={event} />
 				))}	
-			</ul>
+			</div>
 		</div>
 	</main>
 </Layout>
