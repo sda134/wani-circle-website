@@ -1,0 +1,293 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const events = await getCollection('events');
+const sortedEvents = events.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<Layout title="管理画面 - わにサークル">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <h1 class="text-3xl font-bold text-gray-900">イベント管理</h1>
+          <div class="flex items-center space-x-4">
+            <a
+              href="/admin/new"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              新規イベント作成
+            </a>
+            <button
+              id="logoutButton"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+            >
+              ログアウト
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Success/Error Messages -->
+      <div id="messageContainer" class="hidden mb-4">
+        <div id="messageContent" class="rounded-md p-4">
+          <div class="flex">
+            <div class="ml-3">
+              <p id="messageText" class="text-sm font-medium"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events Table -->
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="px-4 py-5 sm:p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">イベント一覧</h2>
+          
+          {events.length === 0 ? (
+            <div class="text-center py-8">
+              <p class="text-gray-500">まだイベントがありません</p>
+              <a
+                href="/admin/new"
+                class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark"
+              >
+                最初のイベントを作成
+              </a>
+            </div>
+          ) : (
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      イベント名
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      日時
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      場所
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ステータス
+                    </th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      操作
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  {sortedEvents.map((event) => (
+                    <tr key={event.slug} class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{event.data.title}</div>
+                        <div class="text-sm text-gray-500">{event.data.description}</div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{event.data.date}</div>
+                        <div class="text-sm text-gray-500">{event.data.time}</div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {event.data.location}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          event.data.isUpcoming 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {event.data.isUpcoming ? '今後開催' : '開催済み'}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a
+                          href={`/admin/edit/${event.slug}`}
+                          class="text-indigo-600 hover:text-indigo-900 mr-4"
+                        >
+                          編集
+                        </a>
+                        <button
+                          class="text-red-600 hover:text-red-900 delete-btn"
+                          data-event-slug={event.slug}
+                          data-event-title={event.data.title}
+                        >
+                          削除
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+          <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+        <div class="mt-2 px-7 py-3">
+          <h3 class="text-lg font-medium text-gray-900">イベントを削除</h3>
+          <p class="text-sm text-gray-500 mt-2">
+            「<span id="deleteEventTitle"></span>」を削除してもよろしいですか？
+            この操作は取り消せません。
+          </p>
+        </div>
+        <div class="items-center px-4 py-3">
+          <div class="flex justify-end space-x-3">
+            <button
+              id="cancelDelete"
+              class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              キャンセル
+            </button>
+            <button
+              id="confirmDelete"
+              class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              削除
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { AuthService } from '../../lib/auth';
+  import { GitHubAPI } from '../../lib/github-api';
+  import { initializeAdmin } from '../../lib/admin-init';
+
+  // Initialize admin and check authentication
+  document.addEventListener('DOMContentLoaded', async () => {
+    const initialized = await initializeAdmin();
+    if (!initialized) {
+      return; // Will redirect to login
+    }
+  });
+
+  const githubAPI = new GitHubAPI();
+  let currentDeleteSlug = '';
+
+  // Logout functionality
+  document.getElementById('logoutButton')?.addEventListener('click', () => {
+    AuthService.clearSession();
+    window.location.href = '/admin';
+  });
+
+  // Delete functionality
+  const deleteButtons = document.querySelectorAll('.delete-btn');
+  const deleteModal = document.getElementById('deleteModal');
+  const deleteEventTitle = document.getElementById('deleteEventTitle');
+  const cancelDelete = document.getElementById('cancelDelete');
+  const confirmDelete = document.getElementById('confirmDelete');
+
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      currentDeleteSlug = target.dataset.eventSlug || '';
+      const eventTitle = target.dataset.eventTitle || '';
+      
+      if (deleteEventTitle) {
+        deleteEventTitle.textContent = eventTitle;
+      }
+      deleteModal?.classList.remove('hidden');
+    });
+  });
+
+  cancelDelete?.addEventListener('click', () => {
+    deleteModal?.classList.add('hidden');
+    currentDeleteSlug = '';
+  });
+
+  confirmDelete?.addEventListener('click', async () => {
+    if (!currentDeleteSlug) return;
+
+    try {
+      const fileName = `${currentDeleteSlug}.md`;
+      await githubAPI.deleteEvent(fileName);
+      
+      showMessage('イベントが削除されました', 'success');
+      
+      // Reload page after short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Delete error:', error);
+      showMessage('削除に失敗しました', 'error');
+    } finally {
+      deleteModal?.classList.add('hidden');
+      currentDeleteSlug = '';
+    }
+  });
+
+  // Message display functionality
+  function showMessage(message: string, type: 'success' | 'error') {
+    const container = document.getElementById('messageContainer');
+    const content = document.getElementById('messageContent');
+    const text = document.getElementById('messageText');
+    
+    if (!container || !content || !text) return;
+
+    text.textContent = message;
+    
+    // Reset classes
+    content.className = 'rounded-md p-4';
+    
+    if (type === 'success') {
+      content.classList.add('bg-green-50', 'border', 'border-green-200');
+      text.classList.add('text-green-800');
+    } else {
+      content.classList.add('bg-red-50', 'border', 'border-red-200');
+      text.classList.add('text-red-800');
+    }
+    
+    container.classList.remove('hidden');
+    
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+      container.classList.add('hidden');
+    }, 5000);
+  }
+</script>
+
+<style>
+  .bg-primary {
+    background-color: #98d4b9;
+  }
+  .bg-primary-dark {
+    background-color: #5c9f8f;
+  }
+  .border-primary {
+    border-color: #98d4b9;
+  }
+  .ring-primary {
+    --tw-ring-color: #98d4b9;
+  }
+  .focus\:ring-primary:focus {
+    --tw-ring-color: #98d4b9;
+  }
+  .focus\:border-primary:focus {
+    border-color: #98d4b9;
+  }
+</style>
