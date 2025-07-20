@@ -8,12 +8,10 @@ image: "/images/events/coffee_roast.jpg"
 isUpcoming: true
 ---
 
-# 内容
-- 焙煎とは
-- 欠点豆について
-- 自家焙煎のやりかた
+## 内容
 
+このイベントでは生豆のピッキング体験を通して、焙煎にともなう作業や工程について学びました。また、コーヒー生産国での人件費や労働環境の現状、そしてコーヒーの味に影響を与える様々な要素について話します。欠点豆の見分け方や自家焙煎の基本的なやり方についても実践的に学び、コーヒーへの理解を深めます。
 
-# 資料
+## 資料
 
 [googleスライドの資料（リンク）](https://docs.google.com/presentation/d/1WiFTHgDf26xNKFwMg8CmKrhyygEfsRQ0A21Ha6TURlI/edit?usp=drive_link)

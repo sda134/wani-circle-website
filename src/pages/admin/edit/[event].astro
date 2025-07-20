@@ -1,0 +1,338 @@
+---
+export const prerender = false;
+import Layout from '../../../layouts/Layout.astro';
+import { getEntry, getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events');
+  
+  return events.map((event) => ({
+    params: { event: event.slug },
+  }));
+}
+
+const { event } = Astro.params;
+
+if (!event) {
+  return Astro.redirect('/admin/dashboard');
+}
+
+const eventData = await getEntry('events', event);
+
+if (!eventData) {
+  return Astro.redirect('/admin/dashboard');
+}
+---
+
+<Layout title={`${eventData.data.title}を編集 - わにサークル`}>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div class="flex items-center">
+            <a
+              href="/admin/dashboard"
+              class="mr-4 text-gray-500 hover:text-gray-700"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900">イベントを編集</h1>
+          </div>
+          <button
+            id="logoutButton"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            ログアウト
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Success/Error Messages -->
+      <div id="messageContainer" class="hidden mb-4">
+        <div id="messageContent" class="rounded-md p-4">
+          <div class="flex">
+            <div class="ml-3">
+              <p id="messageText" class="text-sm font-medium"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <form id="eventForm" class="space-y-6">
+            <!-- Hidden field for event slug -->
+            <input type="hidden" id="eventSlug" value={event} />
+
+            <!-- Title -->
+            <div>
+              <label for="title" class="block text-sm font-medium text-gray-700">
+                イベント名 <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                required
+                value={eventData.data.title}
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                placeholder="例: コーヒー豆焙煎"
+              />
+            </div>
+
+            <!-- Date and Time -->
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label for="date" class="block text-sm font-medium text-gray-700">
+                  開催日 <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  required
+                  value={eventData.data.date}
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                />
+              </div>
+              <div>
+                <label for="time" class="block text-sm font-medium text-gray-700">
+                  開催時間 <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="time"
+                  name="time"
+                  required
+                  value={eventData.data.time}
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="例: 14:00-16:00"
+                />
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div>
+              <label for="location" class="block text-sm font-medium text-gray-700">
+                開催場所 <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                required
+                value={eventData.data.location}
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                placeholder="例: 伊佐治家"
+              />
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label for="description" class="block text-sm font-medium text-gray-700">
+                説明 <span class="text-red-500">*</span>
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                rows="3"
+                required
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                placeholder="例: コーヒー豆の焙煎、特に欠点豆と焙煎深さについて。"
+              >{eventData.data.description}</textarea>
+            </div>
+
+            <!-- Image -->
+            <div>
+              <label for="image" class="block text-sm font-medium text-gray-700">
+                画像パス <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="image"
+                name="image"
+                required
+                value={eventData.data.image}
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                placeholder="例: /images/events/coffee_roast.jpg"
+              />
+              <p class="mt-1 text-sm text-gray-500">
+                public/images/events/ フォルダに画像をアップロードしてパスを指定してください
+              </p>
+            </div>
+
+            <!-- Upcoming Status -->
+            <div class="flex items-center">
+              <input
+                id="isUpcoming"
+                name="isUpcoming"
+                type="checkbox"
+                checked={eventData.data.isUpcoming}
+                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+              />
+              <label for="isUpcoming" class="ml-2 block text-sm text-gray-900">
+                今後開催予定のイベントとして表示する
+              </label>
+            </div>
+
+            <!-- Content -->
+            <div>
+              <label for="content" class="block text-sm font-medium text-gray-700">
+                詳細内容
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                rows="10"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                placeholder="Markdown形式で詳細内容を入力してください..."
+              >{eventData.body}</textarea>
+              <p class="mt-1 text-sm text-gray-500">
+                Markdown記法が使用できます（## 見出し, - リスト, [リンク](URL) など）
+              </p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end space-x-3">
+              <a
+                href="/admin/dashboard"
+                class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                キャンセル
+              </a>
+              <button
+                type="submit"
+                id="submitButton"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                変更を保存
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<script>
+  import { AuthService } from '../../../lib/auth';
+  import { GitHubAPI } from '../../../lib/github-api';
+
+  // Check authentication
+  AuthService.requireAuth();
+
+  const githubAPI = new GitHubAPI();
+
+  // Logout functionality
+  document.getElementById('logoutButton')?.addEventListener('click', () => {
+    AuthService.clearSession();
+    window.location.href = '/admin';
+  });
+
+  // Form submission
+  const form = document.getElementById('eventForm') as HTMLFormElement;
+  const submitButton = document.getElementById('submitButton') as HTMLButtonElement;
+  const eventSlug = (document.getElementById('eventSlug') as HTMLInputElement).value;
+
+  function setLoading(loading: boolean) {
+    submitButton.disabled = loading;
+    submitButton.textContent = loading ? '保存中...' : '変更を保存';
+  }
+
+  function showMessage(message: string, type: 'success' | 'error') {
+    const container = document.getElementById('messageContainer');
+    const content = document.getElementById('messageContent');
+    const text = document.getElementById('messageText');
+    
+    if (!container || !content || !text) return;
+
+    text.textContent = message;
+    
+    // Reset classes
+    content.className = 'rounded-md p-4';
+    
+    if (type === 'success') {
+      content.classList.add('bg-green-50', 'border', 'border-green-200');
+      text.classList.add('text-green-800');
+    } else {
+      content.classList.add('bg-red-50', 'border', 'border-red-200');
+      text.classList.add('text-red-800');
+    }
+    
+    container.classList.remove('hidden');
+    container.scrollIntoView({ behavior: 'smooth' });
+    
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+      container.classList.add('hidden');
+    }, 5000);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const formData = new FormData(form);
+      
+      const eventData = {
+        title: formData.get('title') as string,
+        date: formData.get('date') as string,
+        time: formData.get('time') as string,
+        location: formData.get('location') as string,
+        description: formData.get('description') as string,
+        image: formData.get('image') as string,
+        isUpcoming: formData.has('isUpcoming'),
+        content: formData.get('content') as string || '',
+      };
+
+      const fileName = `${eventSlug}.md`;
+      await githubAPI.updateEvent(fileName, eventData);
+      
+      showMessage('イベントが正常に更新されました！', 'success');
+      
+      // Redirect to dashboard after delay
+      setTimeout(() => {
+        window.location.href = '/admin/dashboard';
+      }, 2000);
+
+    } catch (error) {
+      console.error('Update event error:', error);
+      showMessage(`イベントの更新に失敗しました: ${error.message}`, 'error');
+    } finally {
+      setLoading(false);
+    }
+  });
+</script>
+
+<style>
+  .bg-primary {
+    background-color: #98d4b9;
+  }
+  .bg-primary-dark {
+    background-color: #5c9f8f;
+  }
+  .border-primary {
+    border-color: #98d4b9;
+  }
+  .ring-primary {
+    --tw-ring-color: #98d4b9;
+  }
+  .focus\:ring-primary:focus {
+    --tw-ring-color: #98d4b9;
+  }
+  .focus\:border-primary:focus {
+    border-color: #98d4b9;
+  }
+  .text-primary {
+    color: #98d4b9;
+  }
+</style>

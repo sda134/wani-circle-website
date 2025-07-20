@@ -1,0 +1,188 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="管理者ログイン - わにサークル">
+  <main class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        管理者ログイン
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        イベント管理システム
+      </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <form id="loginForm" class="space-y-6">
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">
+              パスワード
+            </label>
+            <div class="mt-1">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                placeholder="パスワードを入力してください"
+              />
+            </div>
+          </div>
+
+          <div id="errorMessage" class="hidden text-red-600 text-sm text-center"></div>
+
+          <div>
+            <button
+              type="submit"
+              id="loginButton"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ログイン
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { AuthService } from '../../lib/auth';
+
+  // Wait for DOM to be fully loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check if already authenticated
+    if (AuthService.isAuthenticated()) {
+      window.location.href = '/admin/dashboard';
+    }
+
+    const form = document.getElementById('loginForm') as HTMLFormElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const errorMessage = document.getElementById('errorMessage') as HTMLElement;
+    const loginButton = document.getElementById('loginButton') as HTMLButtonElement;
+
+    console.log('Elements found:', { form, passwordInput, errorMessage, loginButton });
+
+    // Test password input immediately
+    setTimeout(() => {
+      const testPassword = document.getElementById('password')?.value;
+      console.log('Test password value after 2 seconds:', testPassword);
+    }, 2000);
+
+    // Add input event listener for debugging
+    passwordInput?.addEventListener('input', (e) => {
+      console.log('Password input changed:', e.target.value);
+    });
+
+    function showError(message: string) {
+      errorMessage.textContent = message;
+      errorMessage.classList.remove('hidden');
+    }
+
+    function hideError() {
+      errorMessage.classList.add('hidden');
+    }
+
+    function setLoading(loading: boolean) {
+      loginButton.disabled = loading;
+      loginButton.textContent = loading ? 'ログイン中...' : 'ログイン';
+    }
+
+    // Also add click event listener to button as backup
+    loginButton.addEventListener('click', handleLogin);
+    form.addEventListener('submit', handleLogin);
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      hideError();
+      setLoading(true);
+
+      // Try multiple ways to get the password
+      const passwordElement = document.getElementById('password') as HTMLInputElement;
+      const password = passwordElement?.value || passwordInput?.value || '';
+      
+      console.log('Form password value:', password);
+      console.log('Password input element:', passwordElement);
+      console.log('Original passwordInput:', passwordInput);
+      console.log('Password element value directly:', document.getElementById('password')?.value);
+
+      if (!password || password.trim() === '') {
+        showError('パスワードを入力してください');
+        setLoading(false);
+        return;
+      }
+
+    try {
+      // Simple password validation - in development mode, we'll use a simpler approach
+      // Fetch configuration with password using POST method instead of GET
+      const requestBody = JSON.stringify({ password: password });
+      console.log('Sending request body:', requestBody);
+      console.log('Password before JSON.stringify:', password);
+      
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      });
+      
+      console.log('API Response status:', response.status);
+      
+      if (response.ok) {
+        const config = await response.json();
+        console.log('Config received:', config);
+        
+        // Store config in window for other scripts to use
+        window.__ADMIN_PASSWORD__ = config.ADMIN_PASSWORD;
+        window.__GITHUB_TOKEN__ = config.GITHUB_TOKEN;
+        window.__GITHUB_REPO_OWNER__ = config.GITHUB_REPO_OWNER;
+        window.__GITHUB_REPO_NAME__ = config.GITHUB_REPO_NAME;
+        
+        console.log('Storing config in window and session:', {
+          token: config.GITHUB_TOKEN ? `${config.GITHUB_TOKEN.substring(0, 10)}...` : 'Not set',
+          owner: config.GITHUB_REPO_OWNER,
+          repo: config.GITHUB_REPO_NAME,
+        });
+        
+        AuthService.setSession(config);
+        window.location.href = '/admin/dashboard';
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('API Error:', errorData);
+        showError('パスワードが正しくありません');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      showError(`ログインに失敗しました: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+    }
+  });
+</script>
+
+<style>
+  .bg-primary {
+    background-color: #98d4b9;
+  }
+  .bg-primary-dark {
+    background-color: #5c9f8f;
+  }
+  .border-primary {
+    border-color: #98d4b9;
+  }
+  .ring-primary {
+    --tw-ring-color: #98d4b9;
+  }
+  .focus\:ring-primary:focus {
+    --tw-ring-color: #98d4b9;
+  }
+  .focus\:border-primary:focus {
+    border-color: #98d4b9;
+  }
+</style>
